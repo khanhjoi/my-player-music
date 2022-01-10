@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;1,100;1,300;1,400;1,700&family=Outfit:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/normalize.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> My Music Play</title>
+</head>
+<body>
+    <div class="music-app">
+        <div class="app__playing active">
+            <div class="playing__title">
+                <div class="navigation">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="title__text">
+                    <h3>Now playing</h3>
+                    <p class = "text__song">Sting 57th & 9th</p>
+                </div>
+                <div class="setup__vol ">      
+                    <i class="fas fa-volume-up"></i>
+                    <div class="volume">
+                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+             
+            </div>
+            <div class="playing__disc">
+                <img src="/assets/img/1.jpg" alt="" class = "img__song">
+            </div>
+            <div class="playing__control">
+                <div class="control_btn">
+                    <i class="fas fa-redo-alt"></i>   
+                    <i class="fas fa-backward"></i>
+                    <i class="fas fa-stop-circle center-btn"></i>
+                    <i class="fas fa-play-circle center-btn"></i>
+                    <i class="fas fa-forward"></i>
+                    <i class="fas fa-random"></i>
+                </div>
+                <div class="control_time">
+                    <span></span>
+                </div>
+             <div class="titel_nextText">
+                    Next song
+            </div>
+            </div>
+
+        </div>
+        <audio src="" class="app__Audio"></audio>
+        <ul class="app__list">
+            
+           
+        </ul>
+    </div>
+
+<!-- javascript -->
+    <script>
+        // 1. renderSong -> done 
+        // 2. start/ stop load song to cd -> done
+        // 3. cd route / update time song -> done 
+        // 4. next / back song -> done 
+        // 5. random / repeat -> done 
+        // 
+
+        const $ = document.querySelector.bind(document)
+        const $$ = document.querySelectorAll.bind(document)
+
+        const getSong = $('.app__list');
+        const getAudio = $('.app__Audio');
+        const playBTN = $('.fa-play-circle');
+        const pauseBTN = $('.fa-stop-circle');
+
+        const navTime = $('.control_time');
+        const time = $('.control_time span');  
+
+        // cd anime rotation 
+        const imgSong = $('.img__song');
+            var CDanime = imgSong.animate({
+              transform: 'rotate(360deg)'
+             }, {
+                 duration: 10000,
+                 iterations: Infinity
+            })
+         CDanime.pause();  
+
+        var app = {
+            listSong: [
+            {
+                 id: '1',
+                 name: "Begin",
+                 artist: "maneskin",
+                 link: "/assets/music/1.mp3",
+                 img: "/assets/img/1.jpg"
+             },
+             {
+                 id: '2',
+                 name: "To The Moon",
+                 artist: "hooligan",
+                 link: "/assets/music/2.mp3",
+                 img: "/assets/img/2.jpg"
+             },
+             {
+                 id: '3',
+                 name: "Heat Waves",
+                 artist: "Glass Animals",
+                 link: "/assets/music/3.mp3",
+                 img: "/assets/img/3.jpg"
+             },
+             {
+                 id: '4',
+                 name: "Take Me To The Church",
+                 artist: "Hozier",
+                 link: "/assets/music/4.mp3",
+                 img: "/assets/img/4.jpg"
+             },
+             {
+                 id: '5',
+                 name: "Natural",
+                 artist: "imagine Dragons",
+                 link: "/assets/music/5.mp3",
+                 img: "/assets/img/5.jpg"
+             },
+             {
+                 id: '6',
+                 name: "Enemy",
+                 artist: "imagine Dragons",
+                 link: "/assets/music/6.mp3",
+                 img: "/assets/img/6.jpg"
+             },
+             {
+                 id: '7',
+                 name: "Impossible",
+                 artist: "Various",
+                 link: "/assets/music/7.mp3",
+                 img: "/assets/img/7.jpg"
+             }, 
+            ],
+            index: 0,
+            renderSong() {
+               var tmp = this.listSong.map(function(song, index) {
+                    return `<li class="app__item ${index === app.index ? 'active' : ''}"  data-index =  "${index}"">
+                        <img src="${song.img}" alt="" class="item__img">
+                        <div class="app__content">
+                            <h3>${song.name}</h3>
+                            <p>${song.artist}</p>
+                        </div>
+                     </li>` 
+                })
+                getSong.innerHTML = tmp.join('');
+            },
+            renderSongPlaying() {
+                // render first song in cd
+                const firstSongCD = this.listSong[app.index];
+                const textSong = $('.text__song');
+                const imgSong = $('.img__song');
+                textSong.innerText = firstSongCD.name;
+                imgSong.src = firstSongCD.img;
+                getAudio.src = firstSongCD.link;
+            },
+            nextSong() {
+                const nextBTN = $('.fa-forward');
+                nextBTN.onclick = function() {
+                    let appPlaying = $('.app__playing');
+                    appPlaying.classList.remove('active');
+                    
+                    if(app.index >= app.listSong.length - 1) {
+                        app.index = 0;
+                    }else {
+                        app.index++;
+                    }         
+                    app.scrollInToView();
+                    app.renderSong();     
+                    app.renderSongPlaying(); 
+                    getAudio.play();
+                }  
+            },
+            backSong() {
+                const backBTN = $('.fa-backward');
+                backBTN.onclick = function() {
+        
+                    let appPlaying = $('.app__playing');
+                    appPlaying.classList.remove('active');
+                   
+                    if(app.index <= 0) {
+                        app.index = app.listSong.length - 1;
+                    }else {
+                        app.index--;
+                    }
+                    app.scrollInToView();
+                    app.renderSong();    
+                    app.renderSongPlaying();
+                    getAudio.play();
+                }    
+            },
+            handleAudio() {
+                const firstSong = this.listSong[app.index];
+                getAudio.src = firstSong.link;
+                
+                // play audio
+                playBTN.onclick = function() {
+                  if(getAudio.paused) {
+                    getAudio.play() 
+                    let appPlaying = $('.app__playing');
+                    appPlaying.classList.remove('active');
+                    CDanime.play();  
+                  }
+                }
+                 
+                // pause audio
+                pauseBTN.onclick = function() {
+                  if(!getAudio.paused) {
+                    getAudio.pause() 
+                    let appPlaying = $('.app__playing');
+                    appPlaying.classList.add('active');  
+                    CDanime.pause();     
+                  }
+                }
+
+                // update currentTime Audio 
+                getAudio.ontimeupdate = function() {  
+                    time.style.width = Math.ceil(getAudio.currentTime * navTime.offsetWidth / getAudio.duration) + 'px';
+                } 
+
+                // set currentTime Audio
+                navTime.onclick = function(e) {
+                    getAudio.currentTime = e.offsetX  * getAudio.duration / navTime.offsetWidth;
+                }
+
+                // go to next song when end and play random
+                getAudio.onended = function(){
+                    if(radomBTN.className === "fas fa-random") {
+                        let appPlaying = $('.app__playing');
+                        appPlaying.classList.remove('active');
+                        
+                        if(app.index >= app.listSong.length - 1) {
+                            app.index = 0;
+                        }else {
+                            app.index++;
+                        }   
+                        app.scrollInToView();
+                        app.renderSong();    
+                        app.renderSongPlaying();
+                        getAudio.play();
+                    }else {
+                        let appPlaying = $('.app__playing');
+                        appPlaying.classList.remove('active');       
+                        app.playRandomSong();
+                        app.renderSongPlaying(); 
+                        getAudio.play();
+                    }
+                }
+
+                // repeat audio 
+                const repeatBTN = $('.fa-redo-alt');
+                repeatBTN.onclick = function() {
+                    if(repeatBTN.className === "fas fa-redo-alt") {
+                        repeatBTN.classList.add('active');
+                        getAudio.loop = true;
+                    } else {
+                        repeatBTN.classList.remove('active');
+                        getAudio.loop = false;
+                    }
+                }
+
+                // turn on and turn off random audio
+                var radomBTN = $('.fa-random');
+                radomBTN.onclick = function() {
+                    if(radomBTN.className === "fas fa-random") {
+                        radomBTN.classList.add('active');   
+                        
+                    } else {
+                        radomBTN.classList.remove('active');      
+                    }
+                }
+                     
+                
+            },
+            playRandomSong() {
+                let newIndex 
+                do {
+                    newIndex = Math.floor(Math.random() * app.listSong.length)
+                }while(newIndex === app.index)
+                app.index = newIndex;     
+                app.renderSong();       
+            },
+            scrollInToView() {
+                const appActive = $('.app__item.active');
+                appActive.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+            },
+            setVolume() {
+                const upBTN = $('.fa-plus');
+                const downBTN = $('.fa-minus');
+                getAudio.volume = 0.5;
+
+                upBTN.onclick = function() {
+                    if(getAudio.volume <= 0.9999) {
+                        getAudio.volume = getAudio.volume + 0.1;
+                    }else {
+                        getAudio.volume = 1.0;
+                    }
+                   
+                }
+                            
+                downBTN.onclick = function() {
+                    if(getAudio.volume > 0.1) {
+                        getAudio.volume = getAudio.volume - 0.1;
+                        
+                    } else {
+                       getAudio.volume = 0;
+                    }
+                        
+                }                        
+            },
+            updateActiveSong() {
+
+            },
+            handleEvent() {
+
+                // update playing when scrolling
+                const cd = $('.app__playing');
+                const cdHeight = cd.clientHeight;
+
+                document.onscroll = function () {
+                    const scroll = window.scrollY || document.body.scrollTop;
+                    const newHeight = cdHeight - scroll;
+                    cd.style.height = newHeight > 0 ?  newHeight + 'px' : 0;
+                }
+                
+                // click play song 
+                getSong.onclick = function (e) {
+                    const songNode = e.target.closest('.app__item:not(.active)')
+                    if(songNode) {
+                        app.index = parseInt(songNode.dataset.index) ;
+                        app.renderSong();
+                        app.renderSongPlaying();
+
+                        let appPlaying = $('.app__playing');
+                        appPlaying.classList.remove('active');  
+                        getAudio.play();
+                    }
+                }
+
+                // setup volume 
+                const volBTN = $('.fa-volume-up');
+                volBTN.onclick = function() {
+                    let setupVol = $('.setup__vol');
+                    let playingTitle = $('.playing__title');
+                    console.log(setupVol.className)
+                    if(setupVol.className === "setup__vol active") {       
+                        //set up center  
+                        playingTitle.style.marginLeft = 18 + 'px';
+                        setupVol.classList.remove('active');
+                    }else {
+                        //set up center
+                        playingTitle.style.marginLeft = 42 + 'px';
+                        setupVol.classList.add('active');      
+                    }
+                }
+            },           
+            start() {
+                // render list song
+                this.renderSong();
+
+                // render song is playing
+                this.renderSongPlaying();
+
+                // handle Event()
+                this.handleEvent();
+
+                // handle audio player
+                this.handleAudio();
+
+                // next song 
+                this.nextSong();
+                
+                // back song
+                this.backSong();
+
+                // set volume 
+                this.setVolume();
+            }
+        }
+
+        app.start();
+    </script>
+</body>
+</html>
